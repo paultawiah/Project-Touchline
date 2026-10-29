@@ -10,6 +10,7 @@ A mobile-first football management simulation focused on squad building, tactica
 - Eight fictional clubs in a home-and-away league (14 matchdays).
 - League table with points, goal difference, and recent form.
 - Simulated match results, goal events, match timeline, shots, and possession.
+- Matchday injury events, temporary player unavailability, squad availability labels, and medical-facility recovery upgrades.
 - Tactical board and four formations: 4-3-3, 4-2-3-1, 4-4-2, and 3-5-2.
 - Team mentality, pressing intensity, player ratings, fitness, morale, and potential.
 - A starter transfer market with signings, transfer fees, squad sales, wage demands, and a 30-player squad cap.
@@ -53,7 +54,7 @@ The first milestone is a working browser game. Android packaging with Capacitor 
 ## Roadmap
 
 1. Foundation: responsive UI, league loop, saves, build automation.
-2. Simulation: more detailed player attributes, substitutions, injuries, suspensions, match analysis.
+2. Simulation: more detailed player attributes, substitutions, suspensions, match analysis, and deeper injury types. Current injuries are a lightweight matchday-availability prototype.
 3. Career: contract lengths and renewals, wage negotiations, scouting, youth intake, staff, objectives, richer finances, and AI-driven transfer activity.
 4. Quality: tests, balancing, accessibility, performance, original artwork.
 5. Android: Capacitor integration, icons, device testing, signed release build.
