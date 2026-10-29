@@ -88,3 +88,8 @@ No license has been selected. All rights are reserved by default until one is ad
 ### Custom starting XI
 
 The tactics screen now lets the manager select each starting position instead of relying only on automatic selection. Lineup choices are saved with the career, are checked against position compatibility, and exclude injured or suspended players. When changing formations, any incompatible selection falls back to the best available player for that role.
+
+
+### Match ratings and player of the match
+
+After each fixture, the match report shows performance ratings for the selected starting XI, goals credited to starters where the event log identifies the scorer, and a player-of-the-match award. Ratings are a lightweight simulation based on player ability, fitness, morale, result, goals, and match variance; they are not real-world performance data.
