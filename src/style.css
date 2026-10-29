@@ -12,3 +12,6 @@
 
 /* Season statistics */
 .season-mini{margin:8px 0 18px}.season-mini .stat-card{min-width:0}.season-mini .stat-value{font-size:clamp(18px,2vw,25px)}
+
+/* Matchday timeline enhancements */
+.event-row:has(.event-symbol){align-items:start}.event-symbol{display:inline-grid;place-items:center;min-width:25px;height:25px;border-radius:7px;background:rgba(255,255,255,.06);font-size:13px}.event-minute{font-variant-numeric:tabular-nums;font-weight:800}.event-row:has(.event-symbol) span:last-child{line-height:1.5}
