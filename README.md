@@ -98,3 +98,8 @@ After each fixture, the match report shows performance ratings for the selected 
 ### Season performance statistics
 
 The manager dashboard and first-team squad page now aggregate player appearances, goals recorded in match reports, average match ratings, best rating, and season totals from the current season history. These stats are derived from the game simulation; only starting players currently receive individual ratings.
+
+
+### Matchday presentation and dynamic transfer market
+
+Match timelines now include a half-time score and a final-whistle summary, with distinct symbols for goals, cards, injuries, tactical substitutions, and the whistle. The transfer market evolves after matchdays: rival clubs may sign available targets, new fictional players can enter the market, and market changes are surfaced in the manager notification. These are lightweight simulated market events rather than a live online transfer network.
