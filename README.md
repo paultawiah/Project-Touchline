@@ -83,3 +83,8 @@ No license has been selected. All rights are reserved by default until one is ad
 - Managers can select Balanced, Attack, or Protect Lead in match preparation.
 - The match engine models up to three automatic tactical substitutions from minute 61 using available bench players. Attack prioritizes late attacking pressure; Protect Lead prioritizes defensive resistance; Balanced provides a smaller general boost.
 - Substitutions are currently an automated match simulation model, not a manual pause-and-substitute live match interface.
+
+
+### Custom starting XI
+
+The tactics screen now lets the manager select each starting position instead of relying only on automatic selection. Lineup choices are saved with the career, are checked against position compatibility, and exclude injured or suspended players. When changing formations, any incompatible selection falls back to the best available player for that role.
