@@ -30,14 +30,17 @@ const current=()=>state.fixtures[state.round]?.find(m=>m.home===state.clubId||m.
 const nextOpp=()=>{const m=current();return m?club(m.home===state.clubId?m.away:m.home):null};
 function xi(){let used=new Set(),ranked=[...state.players].filter(p=>(p.injuryMatches||0)===0&&(p.suspendedMatches||0)===0).sort((a,b)=>b.rating+(b.fitness-80)*.12-(a.rating+(a.fitness-80)*.12));return shapes[state.formation].map(([pos,x,y])=>{let p=ranked.find(p=>!used.has(p.id)&&fits(p.pos,pos))||ranked.find(p=>!used.has(p.id));if(p)used.add(p.id);return{p,pos,x,y}}).filter(x=>x.p)}
 function fits(a,b){if(a===b)return true;if(["RB","LB","RWB","LWB"].includes(a)&&["RB","LB","RWB","LWB"].includes(b))return true;if(["CM","DM","AM"].includes(a)&&["CM","DM","AM"].includes(b))return true;if(["RW","LW","RM","LM"].includes(a)&&["RW","LW","RM","LM"].includes(b))return true;if(a==="ST"&&["ST","CF"].includes(b))return true;return a==="CB"&&b==="CB"}
-function power(id,home){let c=club(id);if(id!==state.clubId)return c.strength+(home?3:0);let starters=xi(),avg=starters.reduce((s,x)=>s+x.p.rating,0)/starters.length,fit=starters.reduce((s,x)=>s+x.p.fitness,0)/starters.length;return avg+(fit-80)*.12+(state.formation==="4-3-3"?2:1)+(state.mentality==="Attacking"?3:state.mentality==="Defensive"?-2:0)+(state.pressing==="High"?(fit>78?2:-2):state.pressing==="Low"?-1:0)+(home?4:0)}
+function squadProfile(id){if(id!==state.clubId){const rating=club(id).strength;return {rating,attack:rating+(id.charCodeAt(0)%5),defence:rating+(id.charCodeAt(1)%5),passing:rating+(id.charCodeAt(2)%4),fitness:82}}const starters=xi(),n=Math.max(1,starters.length),avg=fn=>starters.reduce((sum,x)=>sum+fn(x.p),0)/n;return {rating:avg(p=>p.rating),attack:avg(p=>{const a=playerAttributes(p);return a.shooting*.55+a.pace*.2+a.passing*.25}),defence:avg(p=>{const a=playerAttributes(p);return (p.pos==="GK"?a.goalkeeping:a.defending)*.65+a.passing*.15+p.rating*.2}),passing:avg(p=>playerAttributes(p).passing),fitness:avg(p=>p.fitness)}}
+function power(id,home){const c=club(id),profile=squadProfile(id);if(id!==state.clubId)return c.strength+(home?3:0);return profile.rating+(profile.fitness-80)*.12+(state.formation==="4-3-3"?2:1)+(state.mentality==="Attacking"?3:state.mentality==="Defensive"?-2:0)+(state.pressing==="High"?(profile.fitness>78?2:-2):state.pressing==="Low"?-1:0)+(home?4:0)}
 function simulate(m){
  const h=club(m.home),a=club(m.away),hp=power(m.home,true),ap=power(m.away,false);
  const homeIsPlayer=m.home===state.clubId,awayIsPlayer=m.away===state.clubId;
+ const homeProfile=squadProfile(m.home),awayProfile=squadProfile(m.away);
  const strengthGap=Math.max(-18,Math.min(18,hp-ap));
- const homePossession=Math.max(28,Math.min(72,Math.round(50+strengthGap*.42+(Math.random()*8-4))));
+ const passingGap=Math.max(-18,Math.min(18,homeProfile.passing-awayProfile.passing));
+ const homePossession=Math.max(28,Math.min(72,Math.round(50+strengthGap*.25+passingGap*.32+(Math.random()*8-4))));
  let hg=0,ag=0,homeShots=0,awayShots=0,events=[];
- const attackers=()=>state.players.filter(p=>["ST","LW","RW","AM","CM"].includes(p.pos)).sort((x,y)=>(y.rating+(y.fitness-80)*.08)-(x.rating+(x.fitness-80)*.08));
+ const attackers=()=>state.players.filter(p=>["ST","LW","RW","AM","CM"].includes(p.pos)).sort((x,y)=>{const ax=playerAttributes(x),ay=playerAttributes(y);return (ay.shooting*.7+ay.pace*.2+ay.passing*.1)-(ax.shooting*.7+ax.pace*.2+ax.passing*.1)});
  const scorerFor=(isHome)=>{
   const controlled=(isHome&&homeIsPlayer)||(!isHome&&awayIsPlayer);
   if(!controlled)return (isHome?h.name:a.name).split(" ")[0]+" forward";
@@ -50,6 +53,7 @@ function simulate(m){
  for(let minute=1;minute<=90;minute++){
   const isHome=Math.random()<homePossession/100;
   const teamPower=isHome?hp:ap,opponentPower=isHome?ap:hp;
+  const attackingProfile=isHome?homeProfile:awayProfile,defendingProfile=isHome?awayProfile:homeProfile;
   const teamId=isHome?m.home:m.away;
   const controlled=(isHome&&homeIsPlayer)||(!isHome&&awayIsPlayer);
   const formationBonus=controlled?(state.formation==="4-3-3"?0.025:state.formation==="3-5-2"?0.012:0):0;
@@ -59,7 +63,8 @@ function simulate(m){
   if(Math.random()<.25){
    if(isHome)homeShots++;else awayShots++;
    const quality=Math.random();
-   const goalChance=Math.max(.025,Math.min(.32,.055+quality*.105+(teamPower-opponentPower)*.002+formationBonus+mentalityBonus+pressingBonus));
+   const attackEdge=Math.max(-20,Math.min(20,attackingProfile.attack-defendingProfile.defence));
+   const goalChance=Math.max(.025,Math.min(.32,.055+quality*.105+(teamPower-opponentPower)*.0015+attackEdge*.0025+formationBonus+mentalityBonus+pressingBonus));
    if(Math.random()<goalChance){
     if(isHome)hg++;else ag++;
     events.push({minute,type:"goal",text:scorerFor(isHome)+" scores for "+(isHome?h.name:a.name)+"."});
@@ -93,7 +98,8 @@ function offersPanel(){const offers=state.offers||[];return '<section class="pan
 function createIncomingOffer(){if(Math.random()>.22||!state.players.length)return null;const candidates=state.players.filter(p=>p.rating>=64&&p.age<31&&!state.offers.some(o=>o.playerId===p.id));if(!candidates.length)return null;const p=candidates[Math.floor(Math.random()*candidates.length)],rivals=clubs.filter(c=>c.id!==state.clubId),c=rivals[Math.floor(Math.random()*rivals.length)],value=Math.round((p.rating*2200+Math.max(0,p.potential-p.rating)*900+Math.max(0,27-p.age)*1800)/1000)*1000;const offer={id:Date.now(),playerId:p.id,clubId:c.id,clubName:c.name,fee:Math.round(value*(1.05+Math.random()*.45)/5000)*5000};state.offers.push(offer);return p.name+" has attracted a "+money(offer.fee)+" bid from "+c.name+"."}
 function acceptOffer(id){const o=state.offers.find(x=>x.id===id);if(!o)return;const p=state.players.find(x=>x.id===o.playerId);if(!p){state.offers=state.offers.filter(x=>x.id!==id);save();render("squad");return}if(state.players.length<=11){notify("Keep at least 11 players. Sign a replacement before accepting this bid.");return}state.players=state.players.filter(x=>x.id!==p.id);state.money+=o.fee;state.offers=state.offers.filter(x=>x.id!==id);save();notify(o.clubName+" signed "+p.name+" for "+money(o.fee)+".");render("squad")}
 function rejectOffer(id){const o=state.offers.find(x=>x.id===id);state.offers=state.offers.filter(x=>x.id!==id);save();notify(o?"You rejected "+o.clubName+"'s bid.":"Bid removed.");render("squad")}
-function scoutReport(p){const n=(offset,lo=30,hi=95)=>Math.max(lo,Math.min(hi,p.rating+offset+Math.floor((p.id*7+offset*13)%11)-5));const gk=p.pos==="GK";return {pace:n(gk?-24:(["CB","DM"].includes(p.pos)?-8:5)),passing:n(["CM","AM","DM"].includes(p.pos)?8:-2),shooting:n(p.pos==="ST"?10:(["RW","LW","AM"].includes(p.pos)?4:-10)),defending:n(["GK","CB","RB","LB","DM"].includes(p.pos)?8:-8),goalkeeping:n(gk?18:-28),potential:p.potential}}
+function playerAttributes(p){const n=(offset,lo=25,hi=96)=>Math.max(lo,Math.min(hi,p.rating+offset+Math.floor((p.id*7+offset*13)%11)-5));const gk=p.pos==="GK";return {pace:n(gk?-24:(["CB","DM"].includes(p.pos)?-8:5)),passing:n(["CM","AM","DM"].includes(p.pos)?8:-2),shooting:n(p.pos==="ST"?10:(["RW","LW","AM"].includes(p.pos)?4:-10)),defending:n(["GK","CB","RB","LB","DM"].includes(p.pos)?8:-8),goalkeeping:n(gk?18:-28),potential:p.potential}}
+function scoutReport(p){return playerAttributes(p)}
 function scoutPlayer(id){const p=(state.marketPlayers||[]).find(x=>x.id===id);if(!p)return;if((state.scoutedPlayers||[]).includes(id)){notify("Scouting report already available.");return}const fee=12000;if(state.money<fee){notify("Not enough funds to commission this scouting report.");return}state.money-=fee;state.scoutedPlayers.push(id);save();notify("Scouting report ready for "+p.name+".");render("squad")}
 function transferMarket(){
  const market=state.marketPlayers||[],scouted=state.scoutedPlayers||[];
