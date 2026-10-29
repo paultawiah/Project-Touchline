@@ -12,7 +12,8 @@ A mobile-first football management simulation focused on squad building, tactica
 - Simulated match results, goal events, match timeline, shots, and possession.
 - Tactical board and four formations: 4-3-3, 4-2-3-1, 4-4-2, and 3-5-2.
 - Team mentality, pressing intensity, player ratings, fitness, morale, and potential.
-- A starter transfer market with signings, transfer fees, squad sales, and a 30-player squad cap.
+- A starter transfer market with signings, transfer fees, squad sales, wage demands, and a 30-player squad cap.
+- Matchday payroll based on player ratings, wage-bill visibility, and a 5% wage increase at each new season.
 - Recovery sessions, club funds, and upgradeable training, youth, and medical facilities.
 - Local career save plus JSON export/import and multi-season progression.
 - Progressive web app shell and GitHub Actions build workflow.
@@ -43,7 +44,7 @@ The first milestone is a working browser game. Android packaging with Capacitor 
 
 - Match simulation is probabilistic, not a frame-by-frame tactical engine.
 - Player attributes and tactical effects are simplified.
-- Transfers are a basic local-market prototype: no contracts, wages, agents, negotiations, or AI club bidding.
+- Transfers and finances remain a prototype: wages are estimated from ratings and paid after each match; there are no contract lengths, renewals, release clauses, agents, negotiations, gate-receipt income, or AI club bidding.
 - Clubs and players are fictional; there is no licensed real-world player data.
 - Career saves live in the browser/device unless exported and imported.
 - Offline support is an initial app-shell cache, not a guarantee that every feature works offline.
@@ -53,7 +54,7 @@ The first milestone is a working browser game. Android packaging with Capacitor 
 
 1. Foundation: responsive UI, league loop, saves, build automation.
 2. Simulation: more detailed player attributes, substitutions, injuries, suspensions, match analysis.
-3. Career: contracts, wages, scouting, youth intake, staff, objectives, richer finances, and AI-driven transfer activity.
+3. Career: contract lengths and renewals, wage negotiations, scouting, youth intake, staff, objectives, richer finances, and AI-driven transfer activity.
 4. Quality: tests, balancing, accessibility, performance, original artwork.
 5. Android: Capacitor integration, icons, device testing, signed release build.
 6. Expansion: deeper tactical AI, African competitions, localization, PC-friendly controls.
