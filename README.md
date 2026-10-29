@@ -77,3 +77,9 @@ The first milestone is a working browser game. Android packaging with Capacitor 
 ## License
 
 No license has been selected. All rights are reserved by default until one is added.
+
+### Tactical substitution strategy
+
+- Managers can select Balanced, Attack, or Protect Lead in match preparation.
+- The match engine models up to three automatic tactical substitutions from minute 61 using available bench players. Attack prioritizes late attacking pressure; Protect Lead prioritizes defensive resistance; Balanced provides a smaller general boost.
+- Substitutions are currently an automated match simulation model, not a manual pause-and-substitute live match interface.
