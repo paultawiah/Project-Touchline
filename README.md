@@ -16,6 +16,8 @@ A mobile-first football management simulation focused on squad building, tactica
 - Team mentality, pressing intensity, player ratings, fitness, morale, and potential.
 - A starter transfer market with signings, transfer fees, squad sales, wage demands, free agents, and a 30-player squad cap.
 - Player contracts with season lengths, renewal offers, signing bonuses, wage increases, expiry warnings, and free-agent departures at season rollover.
+- Player playing-time tracking and morale dynamics: starting-XI selections build appearance records, regular starters gain morale, and underused players can become unhappy.
+- Contract renewal negotiations: player morale and playing time influence acceptance, and unhappy players may require a larger wage offer.
 - Incoming transfer bids from rival clubs for eligible senior players, with accept/reject controls and transfer-fee income.
 - Matchday payroll based on player ratings, wage-bill visibility, and a 5% wage increase at each new season.
 - Recovery sessions, club funds, and upgradeable training, youth, and medical facilities.
