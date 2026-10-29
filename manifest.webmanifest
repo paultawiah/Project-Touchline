@@ -1,0 +1,11 @@
+{
+  "name": "Project Touchline",
+  "short_name": "Touchline",
+  "description": "Build your club, shape your tactics, and chase football glory.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#081310",
+  "theme_color": "#0a1715",
+  "orientation": "any",
+  "icons": []
+}
