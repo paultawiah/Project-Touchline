@@ -93,3 +93,8 @@ The tactics screen now lets the manager select each starting position instead of
 ### Match ratings and player of the match
 
 After each fixture, the match report shows performance ratings for the selected starting XI, goals credited to starters where the event log identifies the scorer, and a player-of-the-match award. Ratings are a lightweight simulation based on player ability, fitness, morale, result, goals, and match variance; they are not real-world performance data.
+
+
+### Season performance statistics
+
+The manager dashboard and first-team squad page now aggregate player appearances, goals recorded in match reports, average match ratings, best rating, and season totals from the current season history. These stats are derived from the game simulation; only starting players currently receive individual ratings.
