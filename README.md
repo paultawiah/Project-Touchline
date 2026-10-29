@@ -17,6 +17,8 @@ A mobile-first football management simulation focused on squad building, tactica
 - A starter transfer market with signings, transfer fees, squad sales, wage demands, and a 30-player squad cap.
 - Matchday payroll based on player ratings, wage-bill visibility, and a 5% wage increase at each new season.
 - Recovery sessions, club funds, and upgradeable training, youth, and medical facilities.
+- A youth academy with paid intakes, fictional prospects, development progress, and promotion into the senior squad.
+- Gradual player development tied to age, potential, fitness, training focus, and training/youth facility levels.
 - Local career save plus JSON export/import and multi-season progression.
 - Progressive web app shell and GitHub Actions build workflow.
 
@@ -56,7 +58,7 @@ The first milestone is a working browser game. Android packaging with Capacitor 
 
 1. Foundation: responsive UI, league loop, saves, build automation.
 2. Simulation: more detailed player attributes, substitutions, richer match analysis, and deeper injury types. Current injuries and discipline are lightweight matchday-availability prototypes.
-3. Career: contract lengths and renewals, wage negotiations, scouting, youth intake, staff, objectives, richer finances, and AI-driven transfer activity.
+3. Career: contract lengths and renewals, wage negotiations, deeper scouting, staff, objectives, richer finances, and AI-driven transfer activity.
 4. Quality: tests, balancing, accessibility, performance, original artwork.
 5. Android: Capacitor integration, icons, device testing, signed release build.
 6. Expansion: deeper tactical AI, African competitions, localization, PC-friendly controls.
