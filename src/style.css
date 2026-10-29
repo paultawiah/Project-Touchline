@@ -6,3 +6,6 @@
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 /* Custom starting XI controls */
 .lineup-editor{margin-top:14px;padding-top:12px;border-top:1px solid var(--line,rgba(255,255,255,.12))}.lineup-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0;font-size:13px}.lineup-row>span{font-weight:700;color:var(--muted,#9ba9a1)}.lineup-select{width:100%;min-width:0}
+
+/* Match report player-of-the-match */
+.player-of-match{display:flex;align-items:center;gap:12px;padding:14px;margin:12px 0 18px;border-radius:12px;background:rgba(211,168,74,.1);border:1px solid rgba(211,168,74,.28)}.potm-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(211,168,74,.18);font-size:22px;color:#d3a84a}.player-of-match div{display:grid;gap:4px;flex:1}.player-of-match small{font-size:10px;letter-spacing:.12em;opacity:.7}.player-of-match strong{font-size:15px}.player-of-match>b{font-size:24px;color:#d3a84a}
