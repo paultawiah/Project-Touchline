@@ -19,7 +19,51 @@ const nextOpp=()=>{const m=current();return m?club(m.home===state.clubId?m.away:
 function xi(){let used=new Set(),ranked=[...state.players].sort((a,b)=>b.rating+(b.fitness-80)*.12-(a.rating+(a.fitness-80)*.12));return shapes[state.formation].map(([pos,x,y])=>{let p=ranked.find(p=>!used.has(p.id)&&fits(p.pos,pos))||ranked.find(p=>!used.has(p.id));if(p)used.add(p.id);return{p,pos,x,y}}).filter(x=>x.p)}
 function fits(a,b){if(a===b)return true;if(["RB","LB","RWB","LWB"].includes(a)&&["RB","LB","RWB","LWB"].includes(b))return true;if(["CM","DM","AM"].includes(a)&&["CM","DM","AM"].includes(b))return true;if(["RW","LW","RM","LM"].includes(a)&&["RW","LW","RM","LM"].includes(b))return true;if(a==="ST"&&["ST","CF"].includes(b))return true;return a==="CB"&&b==="CB"}
 function power(id,home){let c=club(id);if(id!==state.clubId)return c.strength+(home?3:0);let starters=xi(),avg=starters.reduce((s,x)=>s+x.p.rating,0)/starters.length,fit=starters.reduce((s,x)=>s+x.p.fitness,0)/starters.length;return avg+(fit-80)*.12+(state.formation==="4-3-3"?2:1)+(state.mentality==="Attacking"?3:state.mentality==="Defensive"?-2:0)+(state.pressing==="High"?(fit>78?2:-2):state.pressing==="Low"?-1:0)+(home?4:0)}
-function simulate(m){let h=club(m.home),a=club(m.away),hp=power(m.home,true),ap=power(m.away,false),hc=Math.max(.12,Math.min(.88,.5+(hp-ap)*.012)),hg=0,ag=0,events=[];for(let minute of [8,15,22,31,38,46,54,62,70,77,84,90]){let home=Math.random()<hc,rate=home?.75:.63;if(Math.random()<rate/6){if(home)hg++;else ag++;let scorers=(home&&m.home===state.clubId)||(!home&&m.away===state.clubId)?xi().filter(x=>["ST","LW","RW","AM"].includes(x.p.pos)).map(x=>x.p.name):[];let scorer=scorers.length?scorers[Math.floor(Math.random()*scorers.length)].split(" ").slice(-1)[0]:(home?h.name:a.name).split(" ")[0]+" forward";events.push({minute,type:"goal",text:scorer+" scores for "+(home?h.name:a.name)+"."})}else if(Math.random()<.13)events.push({minute,type:"chance",text:(home?h.name:a.name)+" create a promising chance."})}events.sort((a,b)=>a.minute-b.minute);return{...m,homeGoals:hg,awayGoals:ag,events,homeShots:5+Math.floor(Math.random()*10),awayShots:4+Math.floor(Math.random()*10),homePossession:Math.max(30,Math.min(70,Math.round(50+(hp-ap)*.45+Math.random()*10-5))),played:true,date:"Matchday "+(state.round+1)}}
+function simulate(m){
+ const h=club(m.home),a=club(m.away),hp=power(m.home,true),ap=power(m.away,false);
+ const homeIsPlayer=m.home===state.clubId,awayIsPlayer=m.away===state.clubId;
+ const strengthGap=Math.max(-18,Math.min(18,hp-ap));
+ const homePossession=Math.max(28,Math.min(72,Math.round(50+strengthGap*.42+(Math.random()*8-4))));
+ let hg=0,ag=0,homeShots=0,awayShots=0,events=[];
+ const attackers=()=>state.players.filter(p=>["ST","LW","RW","AM","CM"].includes(p.pos)).sort((x,y)=>(y.rating+(y.fitness-80)*.08)-(x.rating+(x.fitness-80)*.08));
+ const scorerFor=(isHome)=>{
+  const controlled=(isHome&&homeIsPlayer)||(!isHome&&awayIsPlayer);
+  if(!controlled)return (isHome?h.name:a.name).split(" ")[0]+" forward";
+  const pool=attackers(),weighted=pool.filter(p=>["ST","LW","RW","AM"].includes(p.pos));
+  const choices=weighted.length?weighted:pool;
+  if(!choices.length)return "Your forward";
+  const player=choices[Math.floor(Math.random()*choices.length)];
+  return player.name.split(" ").slice(-1)[0];
+ };
+ for(let minute=1;minute<=90;minute++){
+  const isHome=Math.random()<homePossession/100;
+  const teamPower=isHome?hp:ap,opponentPower=isHome?ap:hp;
+  const teamId=isHome?m.home:m.away;
+  const controlled=(isHome&&homeIsPlayer)||(!isHome&&awayIsPlayer);
+  const formationBonus=controlled?(state.formation==="4-3-3"?0.025:state.formation==="3-5-2"?0.012:0):0;
+  const mentalityBonus=controlled?(state.mentality==="Attacking"?0.035:state.mentality==="Defensive"?-0.018:0):0;
+  const pressingBonus=controlled?(state.pressing==="High"?(state.players.reduce((sum,p)=>sum+p.fitness,0)/state.players.length>72?0.018:-0.012):state.pressing==="Low"?-0.008:0):0;
+  const attackChance=Math.max(.035,Math.min(.30,.105+(teamPower-opponentPower)*.003+formationBonus+mentalityBonus+pressingBonus));
+  if(Math.random()<.25){
+   if(isHome)homeShots++;else awayShots++;
+   const quality=Math.random();
+   const goalChance=Math.max(.025,Math.min(.32,.055+quality*.105+(teamPower-opponentPower)*.002+formationBonus+mentalityBonus+pressingBonus));
+   if(Math.random()<goalChance){
+    if(isHome)hg++;else ag++;
+    events.push({minute,type:"goal",text:scorerFor(isHome)+" scores for "+(isHome?h.name:a.name)+"."});
+   }else if(quality>.82&&Math.random()<.48){
+    events.push({minute,type:"chance",text:(isHome?h.name:a.name)+" threaten, but the chance goes begging."});
+   }
+  }else if(Math.random()<attackChance*.45&&Math.random()<.12){
+   events.push({minute,type:"chance",text:(isHome?h.name:a.name)+" work the ball into a dangerous area."});
+  }
+  if(Math.random()<.012){
+   events.push({minute,type:"card",text:(isHome?h.name:a.name)+" receive a yellow card."});
+  }
+ }
+ events.sort((x,y)=>x.minute-y.minute);
+ return {...m,homeGoals:hg,awayGoals:ag,events,homeShots,awayShots,homePossession,played:true,date:"Matchday "+(state.round+1)};
+}
 function resultUpdate(m){for(let id of [m.home,m.away]){let t=table(id),gf=id===m.home?m.homeGoals:m.awayGoals,ga=id===m.home?m.awayGoals:m.homeGoals;t.p++;t.gf+=gf;t.ga+=ga;if(gf>ga){t.w++;t.pts+=3;t.form.unshift("W")}else if(gf===ga){t.d++;t.pts++;t.form.unshift("D")}else{t.l++;t.form.unshift("L")}t.form=t.form.slice(0,5)}}
 function kickOff(){let f=current();if(!f){notify("Season complete — start another season in Club.");return}if(f.played){notify("This fixture is already played.");return}let m=simulate(f);Object.assign(f,m);resultUpdate(m);state.last=m;state.history.push(m);state.round++;let home=m.home===state.clubId,my=home?m.homeGoals:m.awayGoals,opp=home?m.awayGoals:m.homeGoals,reward=my>opp?85000:my===opp?55000:35000;state.money+=reward;state.fans=Math.max(1000,state.fans+(my>opp?220:my===opp?25:-60));state.players.forEach(p=>{p.fitness=Math.max(40,p.fitness-(state.pressing==="High"?12:state.pressing==="Standard"?8:5)+Math.floor(Math.random()*4));p.morale=Math.max(35,Math.min(99,p.morale+(my>opp?4:my===opp?1:-4)))});save();notify((my>opp?"Win":my===opp?"Draw":"Defeat")+" — "+my+"–"+opp+".");render("match")}
 function head(k,t,s,action=""){return '<div class="page-head"><div><div class="eyebrow">'+k+'</div><h1>'+t+'</h1><p class="subtext">'+s+'</p></div>'+action+'</div>'}
