@@ -52,7 +52,7 @@ The first milestone is a working browser game. Android packaging with Capacitor 
 ## Known prototype limits
 
 - Match simulation is probabilistic, not a frame-by-frame tactical engine.
-- Player attributes and tactical effects are simplified.
+- Player attributes and tactical effects are simplified prototype models; they are not yet a full event-by-event tactical engine.
 - Transfers and finances remain a prototype: wages are estimated from ratings and paid after each match; there are no release clauses, agents, player counter-offers, gate-receipt income, or AI club bidding.
 - Clubs and players are fictional; there is no licensed real-world player data.
 - Career saves live in the browser/device unless exported and imported.
@@ -62,7 +62,7 @@ The first milestone is a working browser game. Android packaging with Capacitor 
 ## Roadmap
 
 1. Foundation: responsive UI, league loop, saves, build automation.
-2. Simulation: more detailed player attributes, substitutions, richer match analysis, and deeper injury types. Current injuries and discipline are lightweight matchday-availability prototypes.
+2. Simulation: attribute-driven match outcomes are now in place at prototype level; next improve substitutions, richer match analysis, and deeper injury types. Current injuries and discipline are lightweight matchday-availability prototypes.
 3. Career: wage negotiations and counter-offers, release clauses, deeper scouting, staff, objectives, richer finances, and AI-driven transfer activity.
 4. Quality: tests, balancing, accessibility, performance, original artwork.
 5. Android: Capacitor integration, icons, device testing, signed release build.
